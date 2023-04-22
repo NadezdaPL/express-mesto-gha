@@ -1,19 +1,30 @@
-[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml)
+
 # Проект Mesto фронтенд + бэкенд
 
+Учебный проект на курсе "Веб-разработчик" от Яндекс Практикума. Одностраничное приложение созданное для публикации фотографий с возможностью авторизации, редактирования профиля и отметки понравившихся изображений лайком.
 
-## Директории
+**Проект содержит 3 основные директории:**
 
 `/routes` — папка с файлами роутера  
 `/controllers` — папка с файлами контроллеров пользователя и карточки   
 `/models` — папка с файлами описания схем пользователя и карточки  
   
-Остальные директории вспомогательные, создаются при необходимости разработчиком
+**Техническая составляющая проекта:**
 
-## Запуск проекта
+* JavaScript
+* HTML
+* CSS
+* POSTMAN
+* MONGODB
+* NODE
+
+## Проект можно запустить с помощью команд:
 
 `npm run start` — запускает сервер   
 `npm run dev` — запускает сервер с hot-reload
 
+**Ссылки:**
 
-/express-mesto-gha
+ **[Проект: Место](https://github.com/NadezdaPL/express-mesto-gha)**
+
+  <!-- //**[Макет в Фигме](https://www.figma.com/file/bjyvbKKJN2naO0ucURl2Z0/JavaScript.-Sprint-5?node-id=0%3A1)** -->
