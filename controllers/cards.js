@@ -2,23 +2,30 @@ const Card = require('../models/card');
 const {
   CODE,
   CODE_CREATED,
-  ERROR_CODE,
   ERROR_NOT_FOUND,
-  ERROR_INTERNAL_SERVER,
-} = require('../constants');
+} = require('../utils/constants');
+
+const { handleError } = require('../utils/handlers');
+
+const checkCard = (card, res) => {
+  if (card) {
+    return res.send({ data: card });
+  }
+  return res
+    .status(ERROR_NOT_FOUND)
+    .send({ message: `Карточка с указанным _id не найдена ${ERROR_NOT_FOUND}` });
+};
 
 module.exports.getCards = (req, res) => {
   Card.find({})
+    .populate([
+      { path: 'owner', model: 'user' },
+      { path: 'likes', model: 'user' },
+    ])
     .then((card) => {
-      res.status(CODE).send(card);
+      res.status(CODE).send({ data: card });
     })
-    .catch(() => {
-      res
-        .status(ERROR_INTERNAL_SERVER)
-        .send({
-          message: `На сервере произошла ошибка ${ERROR_INTERNAL_SERVER}`,
-        });
-    });
+    .catch((err) => handleError(err, res));
 };
 
 module.exports.createCards = (req, res) => {
@@ -27,23 +34,15 @@ module.exports.createCards = (req, res) => {
   Card.create({ name, link, owner })
     .then((card) => card.populate('owner'))
     .then((card) => res.status(CODE_CREATED).send({ data: card }))
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        return res
-          .status(ERROR_CODE)
-          .send({
-            message: `Переданы некорректные данные при создании карточки ${ERROR_CODE}`,
-          });
-      }
-      return res.status(ERROR_INTERNAL_SERVER).send({
-        message: `На сервере произошла ошибка ${ERROR_INTERNAL_SERVER}`,
-      });
-    });
+    .catch((err) => handleError(err, res));
 };
 
 module.exports.deleteCards = (req, res) => {
   const { cardId } = req.params;
-  Card.deleteOne({ _id: cardId })
+  Card.findByIdAndDelete({ _id: cardId })
+    .populate([
+      { path: 'owner', model: 'user' },
+    ])
     .then((card) => {
       if (card.deletedCount !== 0) {
         return res.send({ message: 'Карточка была удалена' });
@@ -54,18 +53,7 @@ module.exports.deleteCards = (req, res) => {
           message: `Карточка с указанным _id не найдена ${ERROR_NOT_FOUND}`,
         });
     })
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        return res
-          .status(ERROR_CODE)
-          .send({
-            message: `Переданы некорректные данные при создании карточки ${ERROR_CODE}`,
-          });
-      }
-      return res.status(ERROR_INTERNAL_SERVER).send({
-        message: `На сервере произошла ошибка ${ERROR_INTERNAL_SERVER}`,
-      });
-    });
+    .catch((err) => handleError(err, res));
 };
 
 module.exports.putLike = (req, res) => {
@@ -75,28 +63,12 @@ module.exports.putLike = (req, res) => {
     { $addToSet: { likes: owner } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        return res
-          .status(ERROR_NOT_FOUND)
-          .send({
-            message: `Передан несуществующий _id карточки ${ERROR_NOT_FOUND}`,
-          });
-      }
-      return res.status(CODE).send(card);
-    })
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        return res
-          .status(ERROR_CODE)
-          .send({
-            message: `Переданы некорректные данные для постановки/снятии лайка. ${ERROR_CODE}`,
-          });
-      }
-      return res.status(ERROR_INTERNAL_SERVER).send({
-        message: `На сервере произошла ошибка ${ERROR_INTERNAL_SERVER}`,
-      });
-    });
+    .populate([
+      { path: 'owner', model: 'user' },
+      { path: 'likes', model: 'user' },
+    ])
+    .then((user) => checkCard(user, res))
+    .catch((err) => handleError(err, res));
 };
 
 module.exports.removeLike = (req, res) => {
@@ -106,26 +78,10 @@ module.exports.removeLike = (req, res) => {
     { $pull: { likes: owner } },
     { new: true },
   )
-    .then((card) => {
-      if (!card) {
-        return res
-          .status(ERROR_NOT_FOUND)
-          .send({
-            message: `Передан несуществующий _id карточки ${ERROR_NOT_FOUND}`,
-          });
-      }
-      return res.status(CODE).send(card);
-    })
-    .catch((error) => {
-      if (error.name === 'ValidationError') {
-        return res
-          .status(ERROR_CODE)
-          .send({
-            message: `Переданы некорректные данные для постановки/снятии лайка. ${ERROR_CODE}`,
-          });
-      }
-      return res.status(ERROR_INTERNAL_SERVER).send({
-        message: `На сервере произошла ошибка ${ERROR_INTERNAL_SERVER}`,
-      });
-    });
+    .populate([
+      { path: 'owner', model: 'user' },
+      { path: 'likes', model: 'user' },
+    ])
+    .then((user) => checkCard(user, res))
+    .catch((err) => handleError(err, res));
 };
