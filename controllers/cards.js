@@ -56,13 +56,18 @@ module.exports.deleteCards = (req, res) => {
     .catch((err) => handleError(err, res));
 };
 
-module.exports.putLike = (req, res) => {
-  const owner = req.user._id;
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $addToSet: { likes: owner } },
-    { new: true },
-  )
+module.exports.deleteCards = (req, res) => {
+  const { cardId } = req.params;
+  Card.findByIdAndDelete({ _id: cardId })
+    .populate([
+      { path: 'owner', model: 'user' },
+    ])
+    .then(() => res.send({ message: 'Карточка была удалена' }))
+    .catch((err) => handleError(err, res));
+};
+
+const updateLikes = (req, res, updateData) => {
+  Card.findByIdAndUpdate(req.params.cardId, updateData, { new: true })
     .populate([
       { path: 'owner', model: 'user' },
       { path: 'likes', model: 'user' },
@@ -71,17 +76,14 @@ module.exports.putLike = (req, res) => {
     .catch((err) => handleError(err, res));
 };
 
+module.exports.putLike = (req, res) => {
+  const owner = req.user._id;
+  const newData = { $addToSet: { likes: owner } };
+  updateLikes(req, res, newData);
+};
+
 module.exports.removeLike = (req, res) => {
   const owner = req.user._id;
-  Card.findByIdAndUpdate(
-    req.params.cardId,
-    { $pull: { likes: owner } },
-    { new: true },
-  )
-    .populate([
-      { path: 'owner', model: 'user' },
-      { path: 'likes', model: 'user' },
-    ])
-    .then((user) => checkCard(user, res))
-    .catch((err) => handleError(err, res));
+  const newData = { $pull: { likes: owner } };
+  updateLikes(req, res, newData);
 };
