@@ -57,8 +57,7 @@ module.exports.deleteCards = (req, res) => {
 };
 
 module.exports.deleteCards = (req, res) => {
-  const { cardId } = req.params;
-  Card.findByIdAndDelete({ _id: cardId })
+  Card.findByIdAndDelete(req.params.cardId)
     .populate([
       { path: 'owner', model: 'user' },
     ])
