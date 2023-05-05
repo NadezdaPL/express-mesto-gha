@@ -1,10 +1,11 @@
+const Forbidden = require('../Error/Forbidden');
+const NotFound = require('../Error/NotFound');
 const Card = require('../models/card');
 const {
   CODE,
   CODE_CREATED,
   ERROR_NOT_FOUND,
 } = require('../utils/constants');
-
 const { handleError } = require('../utils/handlers');
 
 const checkCard = (card, res) => {
@@ -38,32 +39,57 @@ module.exports.createCards = (req, res) => {
 };
 
 module.exports.deleteCards = (req, res) => {
-  const { cardId } = req.params;
-  Card.findByIdAndDelete({ _id: cardId })
+  const _id = req.params.cardId;
+
+  Card.findOne({ _id })
     .populate([
       { path: 'owner', model: 'user' },
     ])
     .then((card) => {
-      if (card.deletedCount !== 0) {
-        return res.send({ message: 'Карточка была удалена' });
+      if (!card) {
+        throw new NotFound('Карточка была удалена');
       }
-      return res
-        .status(ERROR_NOT_FOUND)
-        .send({
-          message: `Карточка с указанным _id не найдена ${ERROR_NOT_FOUND}`,
+      if (card.owner._id.toString() !== req.user._id.toString()) {
+        throw new Forbidden('Вы не можете удалить карточку другого пользователя');
+      }
+      Card.findByIdAndDelete({ _id })
+        .populate([
+          { path: 'owner', model: 'user' },
+        ])
+        .then((cardDeleted) => {
+          res.send({ data: cardDeleted });
         });
     })
     .catch((err) => handleError(err, res));
 };
 
-module.exports.deleteCards = (req, res) => {
-  Card.findByIdAndDelete(req.params.cardId)
-    .populate([
-      { path: 'owner', model: 'user' },
-    ])
-    .then(() => res.send({ message: 'Карточка была удалена' }))
-    .catch((err) => handleError(err, res));
-};
+// module.exports.deleteCards = (req, res) => {
+//   const { cardId } = req.params;
+//   Card.findByIdAndDelete({ _id: cardId })
+//     .populate([
+//       { path: 'owner', model: 'user' },
+//     ])
+//     .then((card) => {
+//       if (card.deletedCount !== 0) {
+//         return res.send({ message: 'Карточка была удалена' });
+//       }
+//       return res
+//         .status(ERROR_NOT_FOUND)
+//         .send({
+//           message: `Карточка с указанным _id не найдена ${ERROR_NOT_FOUND}`,
+//         });
+//     })
+//     .catch((err) => handleError(err, res));
+// };
+
+// module.exports.deleteCards = (req, res) => {
+//   Card.findByIdAndDelete(req.params.cardId)
+//     .populate([
+//       { path: 'owner', model: 'user' },
+//     ])
+//     .then(() => res.send({ message: 'Карточка была удалена' }))
+//     .catch((err) => handleError(err, res));
+// };
 
 const updateLikes = (req, res, updateData) => {
   Card.findByIdAndUpdate(req.params.cardId, updateData, { new: true })

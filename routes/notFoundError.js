@@ -1,5 +1,5 @@
 const errorNotFoundRouter = require('express').Router();
-const { errorNotFound } = require('../utils/handlers');
+const { errorNotFound } = require('../utils/notFound');
 
 errorNotFoundRouter.all('/*', errorNotFound);
 
