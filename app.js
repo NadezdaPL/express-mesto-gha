@@ -1,9 +1,9 @@
 require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
-const helmet = require('helmet');
+// const helmet = require('helmet');
 const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
+// const cookieParser = require('cookie-parser');
 const { errors, celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
 const cardsRouter = require('./routes/cards');
@@ -30,7 +30,7 @@ app.post('/signup', celebrate({
 
 app.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().email().required(),
+    email: Joi.string().required().email(),
     password: Joi.string().required(),
   }),
 }), login);
