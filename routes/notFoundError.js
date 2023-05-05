@@ -1,6 +1,6 @@
-const errorNotFoundRouter = require('express').Router();
-const { errorNotFound } = require('../utils/notFound');
+// const errorNotFoundRouter = require('express').Router();
+// const { errorNotFound } = require('../utils/notFound');
 
-errorNotFoundRouter.all('/*', errorNotFound);
+// errorNotFoundRouter.all('/', errorNotFound);
 
-module.exports = errorNotFoundRouter;
+// module.exports = errorNotFoundRouter;

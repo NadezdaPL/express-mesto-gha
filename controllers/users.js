@@ -7,7 +7,6 @@ const User = require('../models/user');
 const {
   CODE,
   CODE_CREATED,
-  ERROR_UNAUTHORIZED,
   ERROR_NOT_FOUND,
 } = require('../utils/constants');
 
