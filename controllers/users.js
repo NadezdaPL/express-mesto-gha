@@ -101,14 +101,13 @@ module.exports.login = (req, res, next) => {
         { expiresIn: '7d' },
       );
       res
-        .cookie('jwt', token, {
+        .cookie('token', token, {
           maxAge: 3600000,
           httpOnly: true,
           sameSite: true,
-        });
+        })
 
-      return res
-        .send({ messasage: 'Вход совершен' });
+        .send({ token });
     })
     .catch(next);
 };
