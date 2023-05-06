@@ -7,6 +7,8 @@ const ERROR_NOT_FOUND = 404;
 const ERROR_CONFLICT = 409;
 const ERROR_INTERNAL_SERVER = 500;
 
+const REGEX = /(https?:\/\/)(www)?([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=])*#?$/;
+
 module.exports = {
   CODE,
   CODE_CREATED,
@@ -16,4 +18,5 @@ module.exports = {
   ERROR_NOT_FOUND,
   ERROR_CONFLICT,
   ERROR_INTERNAL_SERVER,
+  REGEX,
 };

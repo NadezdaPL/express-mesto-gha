@@ -16,12 +16,15 @@ cardsRouter.post('/', celebrate({
     link: Joi.string().required().regex(/(https?:\/\/)(www)?([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=])*#?$/),
   }),
 }), createCards);
+
 cardsRouter.delete('/:cardId', celebrate({
   params: Joi.object().keys({ cardId: Joi.string().length(24).required().hex() }),
 }), deleteCards);
+
 cardsRouter.put('/:cardId/likes', celebrate({
   params: Joi.object().keys({ cardId: Joi.string().length(24).required().hex() }),
 }), putLike);
+
 cardsRouter.delete('/:cardId/likes', celebrate({
   params: Joi.object().keys({ cardId: Joi.string().length(24).required().hex() }),
 }), removeLike);

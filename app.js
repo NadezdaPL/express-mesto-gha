@@ -1,45 +1,21 @@
 require('dotenv').config();
 const express = require('express');
-const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
-const { errors, celebrate, Joi } = require('celebrate');
-const auth = require('./middlewares/auth');
-const cardsRouter = require('./routes/cards');
-const usersRouter = require('./routes/users');
-const { errorNotFound } = require('./utils/notFound');
-const { createUser, login } = require('./controllers/users');
+const errorCelebrate = require('celebrate').errors;
+const routes = require('./routes/index');
 const { ERROR_INTERNAL_SERVER } = require('./utils/constants');
+const errHandlers = require('./utils/handlers');
 
 const app = express();
 const { PORT = 3000 } = process.env;
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
-  useNewUrlParser: true,
-});
-app.use(bodyParser.json());
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+
 app.use(cookieParser());
-
-app.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(/(https?:\/\/)(www)?([a-zA-Z0-9-._~:/?#[\]@!$&'()*+,;=])*#?$/),
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), createUser);
-
-app.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
-
-app.use('/users', auth, usersRouter);
-app.use('/cards', auth, cardsRouter);
-app.all('*', errorNotFound);
-app.use(errors());
+app.use(express.json());
+app.use('/', routes);
+app.use(errorCelebrate());
+app.use(errHandlers);
 
 app.use((err, req, res, next) => {
   const { statusCode = ERROR_INTERNAL_SERVER, message } = err;
