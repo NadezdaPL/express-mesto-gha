@@ -30,15 +30,13 @@
 const jwt = require('jsonwebtoken');
 
 const { NODE_ENV, JWT_SECRET } = process.env;
-const { ERROR_UNAUTHORIZED } = require('../utils/constants');
+const Unauthorized = require('../Error/Unauthorized');
 
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return res
-      .status(ERROR_UNAUTHORIZED)
-      .send({ message: 'Нужно пройти авторизацию' });
+    return next(new Unauthorized('Необходимо пройти авторизацию'));
   }
 
   const token = authorization.replace('Bearer ', '');
@@ -47,9 +45,7 @@ module.exports = (req, res, next) => {
   try {
     payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret');
   } catch (err) {
-    return res
-      .status(ERROR_UNAUTHORIZED)
-      .send({ message: 'Нужно пройти авторизацию' });
+    next(new Unauthorized('Необходимо пройти авторизацию'));
   }
 
   req.user = payload;
