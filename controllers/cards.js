@@ -62,34 +62,6 @@ module.exports.deleteCards = (req, res, next) => {
     .catch(next);
 };
 
-// module.exports.deleteCards = (req, res) => {
-//   const { cardId } = req.params;
-//   Card.findByIdAndDelete({ _id: cardId })
-//     .populate([
-//       { path: 'owner', model: 'user' },
-//     ])
-//     .then((card) => {
-//       if (card.deletedCount !== 0) {
-//         return res.send({ message: 'Карточка была удалена' });
-//       }
-//       return res
-//         .status(ERROR_NOT_FOUND)
-//         .send({
-//           message: `Карточка с указанным _id не найдена ${ERROR_NOT_FOUND}`,
-//         });
-//     })
-//     .catch((err) => handleError(err, res));
-// };
-
-// module.exports.deleteCards = (req, res) => {
-//   Card.findByIdAndDelete(req.params.cardId)
-//     .populate([
-//       { path: 'owner', model: 'user' },
-//     ])
-//     .then(() => res.send({ message: 'Карточка была удалена' }))
-//     .catch((err) => handleError(err, res));
-// };
-
 const updateLikes = (req, res, updateData, next) => {
   Card.findByIdAndUpdate(req.params.cardId, updateData, { new: true })
     .populate([

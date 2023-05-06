@@ -30,7 +30,19 @@ module.exports = (err, req, res, next) => {
       .send({ message: `Переданы некорректные данные ${ERROR_CODE}` });
   }
 
-  if (err instanceof Unauthorized || err instanceof Forbidden || err instanceof NotFound) {
+  if (err instanceof Unauthorized) {
+    return res
+      .status(err.type)
+      .send({ message: err.message });
+  }
+
+  if (err instanceof Forbidden) {
+    return res
+      .status(err.type)
+      .send({ message: err.message });
+  }
+
+  if (err instanceof NotFound) {
     return res
       .status(err.type)
       .send({ message: err.message });

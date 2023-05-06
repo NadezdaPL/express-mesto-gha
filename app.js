@@ -1,24 +1,19 @@
 require('dotenv').config();
 const express = require('express');
+const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
-// const helmet = require('helmet');
-// const bodyParser = require('body-parser');
-// const cookieParser = require('cookie-parser');
 const { errors, celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
-const NotFound = require('./Error/NotFound');
+const { errorNotFound } = require('./utils/notFound');
 const { createUser, login } = require('./controllers/users');
+const { ERROR_INTERNAL_SERVER } = require('./utils/constants');
 
-const error = require('./utils/handlers');
-
-const { PORT = 3000 } = process.env;
 const app = express();
+const { PORT = 3000 } = process.env;
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-// app.use(bodyParser.json());
-
-app.use(express.json());
+app.use(bodyParser.json());
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -37,26 +32,18 @@ app.post('/signin', celebrate({
   }),
 }), login);
 
-app.use(error);
 app.use('/users', auth, usersRouter);
 app.use('/cards', auth, cardsRouter);
-app.use('*', () => {
-  throw new NotFound('Запрашиваемая страница не найдена');
-});
+app.all('*', errorNotFound);
 app.use(errors());
 
-// app.use(cookieParser());
-// app.use(helmet());
-
-// app.use(auth);
-
 app.use((err, req, res, next) => {
-  const { statusCode = 500, message } = err;
+  const { statusCode = ERROR_INTERNAL_SERVER, message } = err;
 
   res
     .status(statusCode)
     .send({
-      message: statusCode === 500 ? 'Ошибка на сервере' : message,
+      message: statusCode === ERROR_INTERNAL_SERVER ? 'Ошибка на сервере' : message,
     });
 
   next();
