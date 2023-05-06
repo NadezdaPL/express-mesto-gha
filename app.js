@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 // const helmet = require('helmet');
-const bodyParser = require('body-parser');
+// const bodyParser = require('body-parser');
 // const cookieParser = require('cookie-parser');
 const { errors, celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
@@ -16,7 +16,9 @@ const error = require('./utils/handlers');
 const { PORT = 3000 } = process.env;
 const app = express();
 mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+
+app.use(express.json());
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -36,23 +38,29 @@ app.post('/signin', celebrate({
 }), login);
 
 app.use(error);
-app.use(auth);
-app.use('/users', usersRouter);
-app.use('/', cardsRouter);
-app.use('*', NotFound);
+app.use('/users', auth, usersRouter);
+app.use('/cards', auth, cardsRouter);
+app.use('*', () => {
+  throw new NotFound('Запрашиваемая страница не найдена');
+});
 app.use(errors());
-// app.use(express.json());
 
 // app.use(cookieParser());
 // app.use(helmet());
 
 // app.use(auth);
 
-// app.use((req, res) => {
-//   res
-//     .status(ERROR_NOT_FOUND)
-//     .send({ message: `Страница не найдена ${ERROR_NOT_FOUND}` });
-// });
+app.use((err, req, res, next) => {
+  const { statusCode = 500, message } = err;
+
+  res
+    .status(statusCode)
+    .send({
+      message: statusCode === 500 ? 'Ошибка на сервере' : message,
+    });
+
+  next();
+});
 
 app.listen(PORT, () => {
   console.log(`Server started on port ${PORT}`);

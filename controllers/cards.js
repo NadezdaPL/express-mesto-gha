@@ -6,7 +6,6 @@ const {
   CODE_CREATED,
   ERROR_NOT_FOUND,
 } = require('../utils/constants');
-const { handleError } = require('../utils/handlers');
 
 const checkCard = (card, res) => {
   if (card) {
@@ -17,7 +16,7 @@ const checkCard = (card, res) => {
     .send({ message: `Карточка с указанным _id не найдена ${ERROR_NOT_FOUND}` });
 };
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .populate([
       { path: 'owner', model: 'user' },
@@ -26,19 +25,19 @@ module.exports.getCards = (req, res) => {
     .then((card) => {
       res.status(CODE).send({ data: card });
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-module.exports.createCards = (req, res) => {
+module.exports.createCards = (req, res, next) => {
   const { name, link } = req.body;
   const owner = req.user;
   Card.create({ name, link, owner })
     .then((card) => card.populate('owner'))
     .then((card) => res.status(CODE_CREATED).send({ data: card }))
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-module.exports.deleteCards = (req, res) => {
+module.exports.deleteCards = (req, res, next) => {
   const _id = req.params.cardId;
 
   Card.findOne({ _id })
@@ -60,7 +59,7 @@ module.exports.deleteCards = (req, res) => {
           res.send({ data: cardDeleted });
         });
     })
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
 // module.exports.deleteCards = (req, res) => {
@@ -91,24 +90,24 @@ module.exports.deleteCards = (req, res) => {
 //     .catch((err) => handleError(err, res));
 // };
 
-const updateLikes = (req, res, updateData) => {
+const updateLikes = (req, res, updateData, next) => {
   Card.findByIdAndUpdate(req.params.cardId, updateData, { new: true })
     .populate([
       { path: 'owner', model: 'user' },
       { path: 'likes', model: 'user' },
     ])
     .then((user) => checkCard(user, res))
-    .catch((err) => handleError(err, res));
+    .catch(next);
 };
 
-module.exports.putLike = (req, res) => {
+module.exports.putLike = (req, res, next) => {
   const owner = req.user._id;
   const newData = { $addToSet: { likes: owner } };
-  updateLikes(req, res, newData);
+  updateLikes(req, res, newData, next);
 };
 
-module.exports.removeLike = (req, res) => {
+module.exports.removeLike = (req, res, next) => {
   const owner = req.user._id;
   const newData = { $pull: { likes: owner } };
-  updateLikes(req, res, newData);
+  updateLikes(req, res, newData, next);
 };

@@ -19,6 +19,12 @@ const checkUser = (user, res) => {
     .send({ message: 'Пользователь по указанному _id не найден' });
 };
 
+module.exports.getUsers = (req, res, next) => {
+  User.find({})
+    .then((user) => res.status(CODE).send(user))
+    .catch(next);
+};
+
 module.exports.createUser = (req, res, next) => {
   const {
     name,
@@ -36,7 +42,15 @@ module.exports.createUser = (req, res, next) => {
       email,
       password: hash,
     }))
-    .then((user) => res.status(CODE_CREATED).send({ data: user }))
+    .then((user) => {
+      const data = user.toObject();
+      delete data.password;
+
+      res
+        .status(CODE_CREATED)
+        .send(data);
+    })
+
     .catch(next);
 };
 
@@ -58,29 +72,26 @@ module.exports.login = (req, res, next) => {
         });
 
       return res
-        .status(CODE)
-        .send({ data: user, token });
+        .send({ messasage: 'Вход совершен' });
     })
     .catch(next);
 };
 
-module.exports.getUsers = (req, res, next) => {
-  User.find({})
-    .then((user) => res.status(CODE).send({ data: user }))
-    .catch(next);
-};
-
-module.exports.getInfoProfile = (req, res, next) => {
-  User.findById(req.params._id)
-    .then((user) => res.send(user))
-    .catch(next);
-};
-
-module.exports.getUsersId = (req, res, next) => {
-  User.findById(req.params.userId)
+const getUsersId = (req, res, data, next) => {
+  User.findById(data)
     .orFail()
     .then((user) => res.send(user))
     .catch(next);
+};
+
+module.exports.getId = (req, res, next) => {
+  const data = req.user.userId;
+  getUsersId(req, res, data, next);
+};
+
+module.exports.getInfoProfile = (req, res, next) => {
+  const data = req.user._id;
+  getUsersId(req, res, data, next);
 };
 
 const updateUser = (req, res, updateData, next) => {
@@ -93,12 +104,12 @@ const updateUser = (req, res, updateData, next) => {
     .catch(next);
 };
 
-module.exports.updateProfile = (req, res) => {
+module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
-  updateUser(req, res, { name, about });
+  updateUser(req, res, { name, about }, next);
 };
 
-module.exports.updateAvatar = (req, res) => {
+module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
-  updateUser(req, res, { avatar });
+  updateUser(req, res, { avatar }, next);
 };
