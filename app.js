@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 const mongoose = require('mongoose');
 const { errors, celebrate, Joi } = require('celebrate');
 const auth = require('./middlewares/auth');
@@ -12,8 +13,11 @@ const { ERROR_INTERNAL_SERVER } = require('./utils/constants');
 
 const app = express();
 const { PORT = 3000 } = process.env;
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
+  useNewUrlParser: true,
+});
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 app.post('/signup', celebrate({
   body: Joi.object().keys({
