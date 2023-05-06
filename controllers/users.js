@@ -41,23 +41,6 @@ module.exports.getInfoProfile = (req, res, next) => {
     .catch(next);
 };
 
-// const getUsersId = (req, res, data, next) => {
-//   User.findById(data)
-//     .orFail()
-//     .then((user) => res.send(user))
-//     .catch(next);
-// };
-
-// module.exports.getId = (req, res, next) => {
-//   const data = req.user.userId;
-//   getUsersId(req, res, data, next);
-// };
-
-// module.exports.getInfoProfile = (req, res, next) => {
-//   const data = req.user._id;
-//   getUsersId(req, res, data, next);
-// };
-
 const updateUser = (req, res, updateData, next) => {
   const userId = req.user._id;
   User.findByIdAndUpdate(userId, updateData, {
