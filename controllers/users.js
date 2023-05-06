@@ -9,7 +9,6 @@ const {
   CODE_CREATED,
   ERROR_NOT_FOUND,
 } = require('../utils/constants');
-const Unauthorized = require('../Error/Unauthorized');
 
 const checkUser = (user, res) => {
   if (user) {
@@ -89,7 +88,6 @@ module.exports.createUser = (req, res, next) => {
 
 module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
       const token = jwt.sign(
@@ -98,12 +96,12 @@ module.exports.login = (req, res, next) => {
         { expiresIn: '7d' },
       );
       res
-        .cookie('jwt', {
+        .cookie('token', token, {
           maxAge: 3600000,
           httpOnly: true,
           sameSite: true,
-        });
-      return res.status(CODE).send({ data: user, token });
+        })
+        .send({ token });
     })
     .catch(next);
 };
