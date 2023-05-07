@@ -86,10 +86,15 @@ module.exports.createUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res) => {
+module.exports.login = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
+      if (!user || !password) {
+        return res
+          .status(ERROR_UNAUTHORIZED)
+          .send({ message: 'Пользователь не найден' });
+      }
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === 'production' ? JWT_SECRET : 'dev-secret',
@@ -100,12 +105,8 @@ module.exports.login = (req, res) => {
           maxAge: 3600000,
           httpOnly: true,
           sameSite: true,
-        })
-        .send({ token });
+        });
+      return res.send({ token });
     })
-    .catch((err) => {
-      res
-        .status(ERROR_UNAUTHORIZED)
-        .send({ message: err.message });
-    });
+    .catch(next);
 };
