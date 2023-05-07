@@ -8,6 +8,7 @@ const {
   CODE,
   CODE_CREATED,
   ERROR_NOT_FOUND,
+  ERROR_UNAUTHORIZED,
 } = require('../utils/constants');
 
 const checkUser = (user, res) => {
@@ -104,7 +105,7 @@ module.exports.login = (req, res) => {
     })
     .catch((err) => {
       res
-        .status(401)
+        .status(ERROR_UNAUTHORIZED)
         .send({ message: err.message });
     });
 };
