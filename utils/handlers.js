@@ -40,62 +40,8 @@ module.exports = (err, req, res, next) => {
   res
     .status(ERROR_INTERNAL_SERVER)
     .send({
-      message: `Произошла неизвестная ошибка ${err.name}: ${err.message}`,
+      message: 'На сервере произошла ошибка',
     });
 
   return next();
 };
-
-// module.exports = (err, req, res, next) => {
-//   if (err instanceof ValidationError) {
-//     return res
-//       .status(ERROR_CODE)
-//       .send({ message: `Переданы некорректные данные ${ERROR_CODE}` });
-//   }
-
-//   if (err instanceof DocumentNotFoundError) {
-//     return res
-//       .status(ERROR_NOT_FOUND)
-//       .send({
-//         message: `Пользователь с указанным _id не найден ${ERROR_NOT_FOUND}`,
-//       });
-//   }
-
-//   if (err instanceof CastError) {
-//     return res
-//       .status(ERROR_CODE)
-//       .send({ message: `Переданы некорректные данные ${ERROR_CODE}` });
-//   }
-
-//   if (err instanceof Unauthorized) {
-//     return res
-//       .status(err.type)
-//       .send({ message: err.message });
-//   }
-
-//   if (err instanceof Forbidden) {
-//     return res
-//       .status(err.type)
-//       .send({ message: err.message });
-//   }
-
-//   if (err instanceof NotFound) {
-//     return res
-//       .status(err.type)
-//       .send({ message: err.message });
-//   }
-
-//   if (err.code === 11000) {
-//     return res
-//       .status(ERROR_CONFLICT)
-//       .send({ message: 'Адрес электронной почты уже зарегистрирован' });
-//   }
-
-//   res
-//     .status(ERROR_INTERNAL_SERVER)
-//     .send({
-//       message: `Произошла неизвестная ошибка ${err.name}: ${err.message}`,
-//     });
-
-//   return next();
-// };

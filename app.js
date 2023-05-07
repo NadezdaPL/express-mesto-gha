@@ -6,10 +6,10 @@ const errorCelebrate = require('celebrate').errors;
 const router = require('./routes/index');
 const { ERROR_INTERNAL_SERVER } = require('./utils/constants');
 const errHandlers = require('./utils/handlers');
+const { PORT, MONGODB } = require('./config');
 
 const app = express();
-const { PORT = 3000 } = process.env;
-mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
+mongoose.connect(MONGODB);
 
 app.use(cookieParser());
 app.use(express.json());
@@ -23,7 +23,7 @@ app.use((err, req, res, next) => {
   res
     .status(statusCode)
     .send({
-      message: statusCode === ERROR_INTERNAL_SERVER ? 'Ошибка на сервере' : message,
+      message: statusCode === ERROR_INTERNAL_SERVER ? 'На сервере произошла ошибка' : message,
     });
 
   next();
