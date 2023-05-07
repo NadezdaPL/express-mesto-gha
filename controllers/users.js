@@ -85,7 +85,7 @@ module.exports.createUser = (req, res, next) => {
     .catch(next);
 };
 
-module.exports.login = (req, res, next) => {
+module.exports.login = (req, res) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
     .then((user) => {
@@ -102,5 +102,9 @@ module.exports.login = (req, res, next) => {
         })
         .send({ token });
     })
-    .catch(next);
+    .catch((err) => {
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
 };
