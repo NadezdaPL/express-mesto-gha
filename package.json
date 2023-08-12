@@ -24,14 +24,6 @@
   "main": "app.js",
   "author": "NadezdaPL",
   "license": "ISC",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com:NadezdaPL/express-mesto-gha.git"
-  },
-  "bugs": {
-    "url": "https://github.com/NadezdaPL/express-mesto-gha/issues"
-  },
-  "homepage": "https://nadezdapl.github.io/express-mesto-gha",
   "devDependencies": {
     "eslint": "^8.38.0",
     "eslint-config-airbnb-base": "^15.0.0",
