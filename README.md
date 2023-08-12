@@ -25,6 +25,6 @@
 
 **Ссылки:**
 
- **[Проект: Место](https://github.com/NadezdaPL/express-mesto-gha)**
+ **[Проект: Место](https://nadezdapl.github.io/react-pizza/)**
 
   <!-- //**[Макет в Фигме](https://www.figma.com/file/bjyvbKKJN2naO0ucURl2Z0/JavaScript.-Sprint-5?node-id=0%3A1)** -->
